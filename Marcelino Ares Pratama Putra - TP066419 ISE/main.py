@@ -133,10 +133,13 @@ for intensity in np.linspace(1, 1.5, 30):
     for filename in manual_order:
         image = layers[filename]
         combined_image = overlayImage(combined_image, image)
+
+    # linear brightness for final combines image
+    combined_image = np.clip(combined_image + (intensity - 1) * 0.5, 0, 1)
     
     # convert to PIL Image and add to frames
     pil_image = Image.fromarray((combined_image * 255).astype(np.uint8))
     frames.append(pil_image)
 
 # Save the final GIF
-frames[0].save('Marcelino Ares Pratama Putra - TP066419 ISE/animation.gif', save_all=True, append_images=frames[1:], duration=100, loop=0)
+frames[0].save('Marcelino Ares Pratama Putra - TP066419 ISE/animation2.gif', save_all=True, append_images=frames[1:], duration=100, loop=0)
