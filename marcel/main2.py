@@ -33,12 +33,13 @@ for filename in manual_order:
     image = img_as_float(io.imread(filepath))
     layers[filename] = image
 
+# initialize dimensions
 image_height, image_width, image_depth = layers[manual_order[0]].shape
 
-# Initialize a transparent canvas
+# initialize a transparent canvas
 combined_image = np.zeros((image_height, image_width, 4), dtype=np.float32)
 
-# Function to overlay images
+# function to overlay images
 def overlay_image(base, overlay):
     x, y = 0, 0  # Change coordinates if needed for positioning
     overlay_height, overlay_width, _ = overlay.shape
@@ -52,7 +53,7 @@ def overlay_image(base, overlay):
     base[:, :, 3] = inv_mask + mask
     return base
 
-# Combine images in the specified order
+# combine images in specified
 for filename in manual_order:
     image = layers[filename]
     combined_image = overlay_image(combined_image, image)
