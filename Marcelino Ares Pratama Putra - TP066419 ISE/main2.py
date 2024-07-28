@@ -80,9 +80,9 @@ modifications = {
     'car_base.png': (applyRedFilter, 1.5),
     'base_ground.png': [(applyRedFilter, 1.2), (darken, 1.5)],
     'fuji_base.png': [(applyRedFilter, 1.5), (darken, 1.5)],
-    'clouds_fuji.png': [(applyRedFilter, 1.5), (darken, 2.5)],
-    'clouds_sun.png': [(applyRedFilter, 1.5), (darken, 2.5)],
-    'clouds_close.png': [(applyRedFilter, 1.5), (darken, 2.5)]
+    'clouds_fuji.png': [(applyRedFilter, 1.5), (darken, 3.5)],
+    'clouds_sun.png': [(applyRedFilter, 1.5), (darken, 3.5)],
+    'clouds_close.png': [(applyRedFilter, 1.5), (darken, 3.5)]
 }
 
 for layer, funcs in modifications.items():
