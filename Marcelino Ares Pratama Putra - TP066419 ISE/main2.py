@@ -10,7 +10,7 @@ width_inches = 1920 / dpi
 height_inches = 1080 / dpi
 
 # get where image components are stored
-components_dir = 'marcel/components'
+components_dir = 'Marcelino Ares Pratama Putra - TP066419 ISE/components'
 png_files = [f for f in os.listdir(components_dir) if f.endswith('.png')]
 
 # define layer order here
@@ -137,4 +137,4 @@ for intensity in np.linspace(1, 1.5, 30):
     frames.append(pil_image)
 
 # Save the final GIF
-frames[0].save('marcel/animation.gif', save_all=True, append_images=frames[1:], duration=100, loop=0)
+frames[0].save('Marcelino Ares Pratama Putra - TP066419 ISE/animation.gif', save_all=True, append_images=frames[1:], duration=100, loop=0)
