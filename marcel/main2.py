@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
+from skimage import io, img_as_float
+from PIL import Image
 import numpy as np
 import os
-from skimage import io, img_as_float, color, filters
 
 # set window dimensions to 1080p (optional)
 dpi = 100
@@ -33,6 +34,22 @@ for filename in manual_order:
     image = img_as_float(io.imread(filepath))
     layers[filename] = image
 
+def darken(image, intensity=1):
+    if intensity < 0:
+        raise ValueError("Intensity factor must be a non-negative value.")
+    if image.shape[2] != 4:
+        raise ValueError("Input image must be an RGBA image.")
+    
+    modified_image = image.copy()
+
+    # Darken green and blue channels
+    scale = 1 - (intensity - 1) * 0.5
+    modified_image[:, :, 0] = np.clip(modified_image[:, :, 0] * scale, 0, 1)
+    modified_image[:, :, 1] = np.clip(modified_image[:, :, 1] * scale, 0, 1)
+    modified_image[:, :, 2] = np.clip(modified_image[:, :, 2] * scale, 0, 1)
+    
+    return modified_image
+
 def applyRedFilter(image, intensity=1):
     if intensity < 0:
         raise ValueError("intensity factor must be a non-negative value.")
@@ -47,48 +64,35 @@ def applyRedFilter(image, intensity=1):
     green_channel = modified_image[:, :, 1]
     blue_channel = modified_image[:, :, 2]
 
-    # Apply red filter
+    # apply red filter
     modified_image[:, :, 0] = np.clip(red_channel * intensity, 0, 1)
     
-    # Scale green and blue channels
-    scale = max(0, 1 - 0.9 * (intensity - 1))
+    # scale green and blue channels
+    scale = max(0, 1 - 0.5 * (intensity - 1))
     modified_image[:, :, 1] = np.clip(green_channel * scale, 0, 1)
     modified_image[:, :, 2] = np.clip(blue_channel * scale, 0, 1)
 
     return modified_image
 
-# modify ground
-layer_to_modify = 'base_ground.png'
-if layer_to_modify in layers:
-    layers[layer_to_modify] = applyRedFilter(layers[layer_to_modify], 1.5)
+# modify images
+modifications = {
+    'time_traveller.png': (applyRedFilter, 1.2),
+    'car_base.png': (applyRedFilter, 1.5),
+    'base_ground.png': [(applyRedFilter, 1.2), (darken, 1.5)],
+    'fuji_base.png': [(applyRedFilter, 1.5), (darken, 1.5)],
+    'clouds_fuji.png': [(applyRedFilter, 1.5), (darken, 2.5)],
+    'clouds_sun.png': [(applyRedFilter, 1.5), (darken, 2.5)],
+    'clouds_close.png': [(applyRedFilter, 1.5), (darken, 2.5)]
+}
 
-# modify person
-layer_to_modify = 'time_traveller.png'
-if layer_to_modify in layers:
-    layers[layer_to_modify] = applyRedFilter(layers[layer_to_modify], 1.5)
-
-# modify fuji
-layer_to_modify = 'fuji_base.png'
-if layer_to_modify in layers:
-    layers[layer_to_modify] = applyRedFilter(layers[layer_to_modify], 1.5)
-
-# modify clouds
-layer_to_modify = 'clouds_fuji.png'
-if layer_to_modify in layers:
-    layers[layer_to_modify] = applyRedFilter(layers[layer_to_modify], 1.5)
-
-layer_to_modify = 'clouds_sun.png'
-if layer_to_modify in layers:
-    layers[layer_to_modify] = applyRedFilter(layers[layer_to_modify], 1.5)
-
-layer_to_modify = 'clouds_close.png'
-if layer_to_modify in layers:
-    layers[layer_to_modify] = applyRedFilter(layers[layer_to_modify], 1.5)
-
-# car
-layer_to_modify = 'car_base.png'
-if layer_to_modify in layers:
-    layers[layer_to_modify] = applyRedFilter(layers[layer_to_modify], 1.5)
+for layer, funcs in modifications.items():
+    if layer in layers:
+        if isinstance(funcs, tuple):
+            func, arg = funcs
+            layers[layer] = func(layers[layer], arg)
+        else:
+            for func, arg in funcs:
+                layers[layer] = func(layers[layer], arg)
 
 # initialize dimensions
 image_height, image_width, image_depth = layers[manual_order[0]].shape
@@ -109,16 +113,28 @@ def overlayImage(base, overlay):
     base[:, :, 3] = inv_mask + mask
     return base
 
-# combine images in specified
-for filename in manual_order:
-    image = layers[filename]
-    combined_image = overlayImage(combined_image, image)
+# create frames for increasing sun brightness
+frames = []
+for intensity in np.linspace(1, 1.5, 30):
+    # load and modify the images
+    combined_image = np.zeros_like(layers[manual_order[0]])
 
-# plt.imshow(layers['car_base.png'])
+    # apply filter to sun with increasing intensity
+    sun_image = layers['sun_red.png']
+    modified_sun = applyRedFilter(sun_image, intensity)
 
-# Display the result
-plt.figure(figsize=(15, 15))
-plt.imshow(combined_image)
-plt.axis('off')  # Hide axes
-plt.tight_layout()
-plt.show()
+    # update layers with modified sun
+    layers['sun_red.png'] = modified_sun
+
+    # combine images
+    for filename in manual_order:
+        image = layers[filename]
+        combined_image = overlayImage(combined_image, image)
+    
+    # convert to PIL Image and add to frames
+    pil_image = Image.fromarray((combined_image * 255).astype(np.uint8))
+    
+    frames.append(pil_image)
+
+# Save the final GIF
+frames[0].save('marcel/animation.gif', save_all=True, append_images=frames[1:], duration=100, loop=0)
