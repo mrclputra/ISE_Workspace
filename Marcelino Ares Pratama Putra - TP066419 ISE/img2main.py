@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from skimage import io, img_as_float, exposure, restoration, transform
 from skimage.color import rgb2hsv, hsv2rgb
-from PIL import Image # for gif
+from PIL import Image
 import numpy as np
 import os
 
@@ -96,33 +96,41 @@ def redden(image, intensity=1):
 
     return modified_image
 
-# adjust earth gamma levels, emulate shadow pointing camera
-mod_layer = layers['earth.png']
-mod_layer = exposure.adjust_gamma(mod_layer, gamma=2)
-layers['earth.png'] = mod_layer
+def contrast(image, in_range, out_range):
+    # Separate channels
+    r, g, b, a = image[:, :, 0], image[:, :, 1], image[:, :, 2], image[:, :, 3]
 
-# modify flag
-mod_layer = layers['flag.png']
-mod_layer = exposure.adjust_gamma(mod_layer, gamma=2)
-layers['flag.png'] = mod_layer
+    # Apply contrast stretching to RGB channels
+    r = exposure.rescale_intensity(r, in_range=in_range, out_range=out_range)
+    g = exposure.rescale_intensity(g, in_range=in_range, out_range=out_range)
+    b = exposure.rescale_intensity(b, in_range=in_range, out_range=out_range)
+
+    # Combine channels back
+    adjusted_image = np.stack([r, g, b, a], axis=-1)
+    
+    return adjusted_image
+
+def gamma(image, factor=1):
+    modified_image = exposure.adjust_gamma(image, gamma=factor)
+    return modified_image
 
 # handle function modifications
 modifications = {
-    'earth.png': [(redden, 1.2)],
-    'moon.png': [(redden, 1.4)],
-    'flag.png': [(denoise, 0.2), (saturate, 0.4), (redden, 1.4)],
+    'earth.png': [(gamma, 2), (redden, 1.2)],
+    'moon.png': [(gamma, 1.5), (redden, 1.4)],
+    'flag.png': [(saturate, 0.4), (contrast, (0, 1), (0.2, 0.8)), (gamma, 3), (redden, 1.4)],
     'clouds.png': [(redden, 4)]
 }
 
 # apply modifications
 for layer, funcs in modifications.items():
     if layer in layers:
-        # Ensure funcs is a list of (function, argument) tuples
+        # Ensure funcs is a list of (function, arguments) tuples
         if not isinstance(funcs, list):
             funcs = [funcs]
-        # Apply each function with its associated argument
-        for func, arg in funcs:
-            layers[layer] = func(layers[layer], arg)
+        # Apply each function with its associated arguments
+        for func, *args in funcs:
+            layers[layer] = func(layers[layer], *args)
 
 # initialize final image dimensions
 image_height, image_width, image_depth = layers[manual_order[0]].shape
@@ -146,8 +154,17 @@ def overlayImage(base, overlay):
 # gif frames
 frames = []
 num_frames = 60
-frequency = 0.05 # how fast it should flash
+frequency = 0.05 # how fast the sun should flash
 earth_movement = 0.07
+
+# comment / uncomment snippet below to save static frame 1 as an image
+# # combine images
+# for filename in manual_order:
+#         image = layers[filename]
+#         combined_image = overlayImage(combined_image, image)
+
+# pil_test_image = Image.fromarray((combined_image * 255).astype(np.uint8))
+# pil_test_image.save('Marcelino Ares Pratama Putra - TP066419 ISE/frame1.png')
 
 # move earth left first
 layers['earth.png'] = transform.warp(layers['earth.png'], transform.AffineTransform(translation=(-120, 0)).inverse, mode='edge', preserve_range=True)
@@ -175,7 +192,7 @@ for i in range(num_frames):
 
     layers['earth.png'] = earth_transformed
 
-    # Combine images
+    # combine images
     for filename in manual_order:
         image = layers[filename]
         combined_image = overlayImage(combined_image, image)
