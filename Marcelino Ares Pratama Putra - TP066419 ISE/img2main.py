@@ -109,8 +109,8 @@ layers['flag.png'] = mod_layer
 # handle function modifications
 modifications = {
     'earth.png': [(redden, 1.2)],
-    'moon.png': [(redden, 1.2)],
-    'flag.png': [(denoise, 0.2), (saturate, 0.3), (redden, 1.2)],
+    'moon.png': [(redden, 1.4)],
+    'flag.png': [(denoise, 0.2), (saturate, 0.4), (redden, 1.4)],
     'clouds.png': [(redden, 4)]
 }
 
