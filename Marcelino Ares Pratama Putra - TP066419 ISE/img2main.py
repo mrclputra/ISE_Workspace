@@ -29,6 +29,7 @@ for filename in manual_order:
 
 # do image modifications here
 
+# utility
 def denoise(image, intensity = 1):
     if intensity < 0:
         raise ValueError("intensity must be a non-negative number")
