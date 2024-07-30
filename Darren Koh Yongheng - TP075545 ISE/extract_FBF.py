@@ -48,9 +48,9 @@ def make_black_background_transparent(input_folder, output_folder, lower_bound, 
             output_path = os.path.join(output_folder, filename)
             cv2.imwrite(output_path, frame_with_transparency)
 
-video_path = 'Video_Effect\\dust.mp4'
-extracted_frames_folder = 'Video_Effect\\Dust_FBF'
-frames_with_transparency_folder = 'Video_Effect\\Dust_NB'
+video_path = 'Darren Koh Yongheng - TP075545 ISE\\Video_Effect\\dust.mp4'
+extracted_frames_folder = 'Darren Koh Yongheng - TP075545 ISE\\Video_Effect\\Dust_FBF'
+frames_with_transparency_folder = 'Darren Koh Yongheng - TP075545 ISE\\Video_Effect\\Dust_NB'
 
 # Define lower and upper bounds for the color black (you can adjust these values)
 lower_black = [0, 0, 0]

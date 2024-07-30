@@ -12,7 +12,7 @@ background_image_path = 'Output\\combined_image.png'
 audio_file_path = 'Sound_Effect\\Wind_Blowing_Sound_Effect.mp3'
 
 # Path to save the final video
-output_video_path = 'Output\\Cyprus_Street.mp4'
+output_video_path = 'Output\\Scene1.mp4'
 
 # Frame rate of the final video
 fps = 24

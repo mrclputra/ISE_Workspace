@@ -9,7 +9,7 @@ width_inches = 1920 / dpi
 height_inches = 1080 / dpi
 
 # Get where image components are stored
-components_dir = 'Assets\\Picture1'
+components_dir = 'Darren Koh Yongheng - TP075545 ISE\Assets\Picture1'
 png_files = [f for f in os.listdir(components_dir) if f.endswith('.png')]
 
 # Here you can manually choose what files to load
@@ -38,7 +38,7 @@ for image in images:
     plt.imshow(image)
 
 # Save the combined image
-output_path = 'Output\\combined_image.png'
+output_path = 'Output\\Scene1.png'
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 plt.savefig(output_path, bbox_inches='tight', pad_inches=0)
 
