@@ -30,7 +30,7 @@ for filename in manual_order:
 # do image modifications here
 
 # utility
-def denoise(image, intensity = 1):
+def denoise(image, intensity=1):
     if intensity < 0:
         raise ValueError("intensity must be a non-negative number")
     if image.shape[2] != 4:
@@ -72,7 +72,6 @@ def saturate(image, factor=1):
 
     return modified_image
     
-
 def redden(image, intensity=1):
     if intensity < 0:
         raise ValueError("intensity must be a non-negative number")
@@ -111,8 +110,8 @@ def contrast(image, in_range, out_range):
     
     return adjusted_image
 
-def gamma(image, factor=1):
-    modified_image = exposure.adjust_gamma(image, gamma=factor)
+def gamma(image, gamma=1):
+    modified_image = exposure.adjust_gamma(image, gamma=gamma)
     return modified_image
 
 # handle function modifications
@@ -140,7 +139,7 @@ combined_image = np.zeros((image_height, image_width, 4), dtype=np.float32)
 
 # function to overlay transparent png images
 def overlayImage(base, overlay):
-    x, y = 0, 0  # Change coordinates if needed for positioning
+    x, y = 0, 0  # change coordinates if needed for positioning
     overlay_height, overlay_width, _ = overlay.shape
     template = np.zeros((base.shape[0], base.shape[1], 4), dtype=np.float32)
     template[y:y+overlay_height, x:x+overlay_width, :] = overlay
@@ -159,10 +158,14 @@ frequency = 0.05 # how fast the sun should flash
 earth_movement = 0.07
 
 # comment / uncomment snippet below to save static frame 1 as an image
-# # combine images
+# combine images
 # for filename in manual_order:
 #         image = layers[filename]
 #         combined_image = overlayImage(combined_image, image)
+
+# plt.imshow(combined_image)
+# plt.axis('off')
+# plt.show()
 
 # pil_test_image = Image.fromarray((combined_image * 255).astype(np.uint8))
 # pil_test_image.save('Marcelino Ares Pratama Putra - TP066419 ISE/frame1.png')
