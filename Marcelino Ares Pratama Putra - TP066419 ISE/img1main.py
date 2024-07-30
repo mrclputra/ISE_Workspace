@@ -108,40 +108,40 @@ def overlayImage(base, overlay):
     base[:, :, 3] = inv_mask + mask
     return base
 
-# comment / uncomment snippet below to save static frame 1 as an image
-# combine images
-for filename in manual_order:
-        image = layers[filename]
-        combined_image = overlayImage(combined_image, image)
-
-pil_test_image = Image.fromarray((combined_image * 255).astype(np.uint8))
-pil_test_image.save('Marcelino Ares Pratama Putra - TP066419 ISE/frame1.png')
-
-# # create frames for increasing sun brightness
-# frames = []
-# for intensity in np.linspace(1, 1.5, 30):
-#     # load and modify the images
-#     combined_image = np.zeros_like(layers[manual_order[0]])
-
-#     # apply filter to sun with increasing intensity
-#     sun_image = layers['sun_red.png']
-
-#     # scale the RGB channels by the brightness intensity factor
-#     sun_image = np.clip(sun_image + (intensity - 1) * 0.12, 0, 1)
-
-#     layers['sun_red.png'] = sun_image
-
-#     # combine images
-#     for filename in manual_order:
+# # comment / uncomment snippet below to save static frame 1 as an image
+# # combine images
+# for filename in manual_order:
 #         image = layers[filename]
 #         combined_image = overlayImage(combined_image, image)
 
-#     # linear brightness for final combines image
-#     combined_image = np.clip(combined_image + (intensity - 1) * 0.7, 0, 1)
-    
-#     # convert to PIL Image and add to frames
-#     pil_image = Image.fromarray((combined_image * 255).astype(np.uint8))
-#     frames.append(pil_image)
+# pil_test_image = Image.fromarray((combined_image * 255).astype(np.uint8))
+# pil_test_image.save('Marcelino Ares Pratama Putra - TP066419 ISE/frame1.png')
 
-# # Save the final GIF
-# frames[0].save('Marcelino Ares Pratama Putra - TP066419 ISE/the_end_is_near.gif', save_all=True, append_images=frames[1:], duration=100, loop=0)
+# create frames for increasing sun brightness
+frames = []
+for intensity in np.linspace(1, 1.5, 30):
+    # load and modify the images
+    combined_image = np.zeros_like(layers[manual_order[0]])
+
+    # apply filter to sun with increasing intensity
+    sun_image = layers['sun_red.png']
+
+    # scale the sun rgb channel brightness
+    sun_image = np.clip(sun_image + (intensity - 1) * 0.05, 0, 1)
+
+    layers['sun_red.png'] = sun_image
+
+    # combine images
+    for filename in manual_order:
+        image = layers[filename]
+        combined_image = overlayImage(combined_image, image)
+
+    # linear brightness for final combined image
+    combined_image = np.clip(combined_image + (intensity - 1) * 0.5, 0, 1)
+    
+    # convert to PIL Image and add to frames
+    pil_image = Image.fromarray((combined_image * 255).astype(np.uint8))
+    frames.append(pil_image)
+
+# Save the final GIF
+frames[0].save('Marcelino Ares Pratama Putra - TP066419 ISE/img1_groundview.gif', save_all=True, append_images=frames[1:], duration=100, loop=0)
